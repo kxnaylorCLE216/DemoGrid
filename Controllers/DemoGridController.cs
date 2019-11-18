@@ -102,16 +102,12 @@ namespace ExampleGrid.Controllers
                     return RedirectToAction("ShowGrid", "DemoGrid");
                 }
 
-                int result = 0;
+                int intId = Convert.ToInt32(id);
 
-                if (result > 0)
-                {
-                    return Json(data: true);
-                }
-                else
-                {
-                    return Json(data: false);
-                }
+                _context.Remove(_context.CustomerTB.Single(a => a.CustomerID == (intId)));
+                _context.SaveChanges();
+
+                return RedirectToAction("ShowGrid", "DemoGrid");
             }
             catch (Exception)
             {
