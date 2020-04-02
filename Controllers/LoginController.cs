@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace CookieAuthenticationDemo.Controllers
 {
@@ -13,6 +14,15 @@ namespace CookieAuthenticationDemo.Controllers
         public ActionResult UserLogin()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            //await HttpContext.AuthenticateAsync.SignOutAsync("CookieAuthentication");
+
+            HttpContext.SignOutAsync("CookieAuthentication");
+            return Redirect("/Account/Login");
         }
 
         [HttpPost]
@@ -29,13 +39,16 @@ namespace CookieAuthenticationDemo.Controllers
             {
                 var userClaims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.GivenName, user.OtherID),
+                    //new Claim(ClaimTypes.GivenName, user.OtherID),
+                      new Claim(ClaimTypes.Name, user.OtherID),
                  };
 
                 var grandmaIdentity = new ClaimsIdentity(userClaims, "User Identity");
 
-                var userPrincipal = new ClaimsPrincipal(new[] { grandmaIdentity });
-                HttpContext.SignInAsync(userPrincipal);
+                ClaimsPrincipal principal = new ClaimsPrincipal(grandmaIdentity);
+
+                //var userPrincipal = new ClaimsPrincipal(new[] { grandmaIdentity });
+                HttpContext.SignInAsync("CookieAuthentication", principal);
 
                 return RedirectToAction("Index", "Home");
             }

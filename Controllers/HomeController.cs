@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Claims;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -38,17 +39,24 @@ namespace ExampleGrid.Controllers
 
         public IActionResult Excel123()
         {
-            var userid = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
-
-            var wat = ClaimTypes.GivenName;
-            var watwat = User.FindFirst(ClaimTypes.GivenName).Value;
-
-            //CreateSpreadsheetWorkbook("C:\\Users\\naylo\\Downloads\\New folder\\new.xlsx");
-            Excel1();
+            var loggedInUser = HttpContext.User;
+            var loggedInUserName = loggedInUser.Identity.Name; // This is our username we set earlier in the claims.
+            var loggedInUserName2 = loggedInUser.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value; //Another way to get the name or any other claim we set.
             return View();
         }
+
+        //    private var userid = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        //    private System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+
+        //    private var wat = ClaimTypes.GivenName;
+        //    private var watwat = User.FindFirst(ClaimTypes.GivenName).Value;
+
+        //    //CreateSpreadsheetWorkbook("C:\\Users\\naylo\\Downloads\\New folder\\new.xlsx");
+        //    private Excel1();
+
+        //        return private View();
+        //}
 
         public static void CreateSpreadsheetWorkbook(string filepath)
         {

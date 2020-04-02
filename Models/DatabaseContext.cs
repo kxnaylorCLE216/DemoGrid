@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ExampleGrid.Models
 {
-    public class Audit
+    public class Audit : Users
     {
         public int Id { get; set; }
         public string TableName { get; set; }
@@ -16,6 +16,7 @@ namespace ExampleGrid.Models
         public string KeyValues { get; set; }
         public string OldValues { get; set; }
         public string NewValues { get; set; }
+        public string person { get; set; }
     }
 
     public class DatabaseContext : DbContext
