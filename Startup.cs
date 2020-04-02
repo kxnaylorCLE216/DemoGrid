@@ -24,6 +24,14 @@ namespace ExampleGrid
             var connection = Configuration.GetConnectionString("DatabaseConnection");
 
             services.AddDbContext<DatabaseContext>(options => options.UseSqlite("Data Source=CustomerDB.db"));
+
+            services.AddAuthentication("CookieAuthentication")
+                        .AddCookie("CookieAuthentication", config =>
+                        {
+                            config.Cookie.Name = "UserLoginCookie";
+                            config.LoginPath = "/Login/UserLogin";
+                        });
+
             services.AddControllersWithViews();
         }
 
@@ -47,6 +55,10 @@ namespace ExampleGrid
 
             app.UseRouting();
 
+            // who are you?
+            app.UseAuthentication();
+
+            // are you allowed?
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

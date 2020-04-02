@@ -2,11 +2,14 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using ExampleGrid.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Security.Claims;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ExampleGrid.Controllers
@@ -14,6 +17,7 @@ namespace ExampleGrid.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -25,8 +29,22 @@ namespace ExampleGrid.Controllers
             return View();
         }
 
+        [Authorize]
+        public ActionResult Users()
+        {
+            var uses = new Models.Users();
+            return View(uses.GetUsers());
+        }
+
         public IActionResult Excel123()
         {
+            var userid = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+
+            var wat = ClaimTypes.GivenName;
+            var watwat = User.FindFirst(ClaimTypes.GivenName).Value;
+
             //CreateSpreadsheetWorkbook("C:\\Users\\naylo\\Downloads\\New folder\\new.xlsx");
             Excel1();
             return View();
