@@ -9,5 +9,6 @@ namespace ExampleGrid.Models
         }
 
         public DbSet<CustomerTB> CustomerTB { get; set; }
+        public DbSet<Sample> Samples { get; set; }
     }
 }

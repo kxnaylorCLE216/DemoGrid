@@ -23,7 +23,7 @@ namespace ExampleGrid
             services.AddMvc();
             var connection = Configuration.GetConnectionString("DatabaseConnection");
 
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlite("Data Source=CustomerDB.db"));
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlite("Data Source=Sample.db"));
             services.AddControllersWithViews();
         }
 
