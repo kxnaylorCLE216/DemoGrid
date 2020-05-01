@@ -1,13 +1,13 @@
-﻿using System;
+﻿using ExampleGrid.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using ExampleGrid.Models;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
 
 namespace ExampleGrid
 {
@@ -15,11 +15,13 @@ namespace ExampleGrid
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly DatabaseContext _context;
+        private readonly long _fileSizeLimit;
 
         public SamplesController(IHostingEnvironment hostingEnvironment, DatabaseContext context)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = context;
+            //_fileSizeLimit = config.GetValue<long>("FileSizeLimit");
         }
 
         // GET: Samples
@@ -47,19 +49,53 @@ namespace ExampleGrid
         }
 
         // GET: Samples/Create
-        public IList<Sample> ImportCustomer()
+        public IList<Sample> ImportSample()
         {
             string rootFolder = _hostingEnvironment.WebRootPath;
-            string fileName = @"ImportCustomers.xlsx";
+            string fileName = @"samples.xlsx";
             FileInfo file = new FileInfo(Path.Combine(rootFolder, fileName));
 
-            List<Sample> samples = new List<Sample>();
+            using (ExcelPackage package = new ExcelPackage(file))
+            {
+                ExcelWorksheet workSheet = package.Workbook.Worksheets["Sample"];
+                int totalRows = workSheet.Dimension.Rows;
 
-            return samples;
+                List<Sample> samplesList = new List<Sample>();
+
+                for (int i = 2; i <= totalRows; i++)
+                {
+                    samplesList.Add(new Sample
+                    {
+                        Country = workSheet.Cells[i, 1].Value.ToString(),
+                        Product = workSheet.Cells[i, 2].Value.ToString(),
+                        DiscountBand = workSheet.Cells[i, 3].Value.ToString(),
+                        UnitsSold = decimal.Parse(workSheet.Cells[i, 4].Value.ToString()),
+                        ManufacturingPrice = decimal.Parse(workSheet.Cells[i, 5].Value.ToString()),
+                        SalePrice = decimal.Parse(workSheet.Cells[i, 6].Value.ToString()),
+                        GrossSales = decimal.Parse(workSheet.Cells[i, 7].Value.ToString()),
+                        Discounts = decimal.Parse(workSheet.Cells[i, 8].Value.ToString()),
+                        Sales = decimal.Parse(workSheet.Cells[i, 9].Value.ToString()),
+                        COGS = decimal.Parse(workSheet.Cells[i, 10].Value.ToString()),
+                        Profit = decimal.Parse(workSheet.Cells[i, 11].Value.ToString()),
+                        Date = DateTime.Parse(workSheet.Cells[i, 12].Value.ToString()),
+                        EnteredBy = workSheet.Cells[i, 13].Value.ToString()
+                    });
+                }
+
+                _context.Samples.AddRange(samplesList);
+                _context.SaveChanges();
+
+                return samplesList;
+            }
         }
 
         // GET: Samples/Create
         public IActionResult Create()
+        {
+            return View();
+        }
+
+        public IActionResult Upload()
         {
             return View();
         }

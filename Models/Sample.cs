@@ -13,7 +13,7 @@ namespace ExampleGrid.Models
         public string DiscountBand { get; set; }
 
         [Display(Name = "Units Sold")]
-        public int UnitsSold { get; set; }
+        public decimal UnitsSold { get; set; }
 
         [Display(Name = "Manufacturing Price")]
         [DataType(DataType.Currency)]
