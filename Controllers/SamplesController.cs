@@ -1,5 +1,7 @@
-﻿using ExampleGrid.Models;
+﻿using ExampleGrid.Controllers;
+using ExampleGrid.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -46,47 +48,6 @@ namespace ExampleGrid
             }
 
             return View(sample);
-        }
-
-        // GET: Samples/Create
-        public IList<Sample> ImportSample()
-        {
-            string rootFolder = _hostingEnvironment.WebRootPath;
-            string fileName = @"samples.xlsx";
-            FileInfo file = new FileInfo(Path.Combine(rootFolder, fileName));
-
-            using (ExcelPackage package = new ExcelPackage(file))
-            {
-                ExcelWorksheet workSheet = package.Workbook.Worksheets["Sample"];
-                int totalRows = workSheet.Dimension.Rows;
-
-                List<Sample> samplesList = new List<Sample>();
-
-                for (int i = 2; i <= totalRows; i++)
-                {
-                    samplesList.Add(new Sample
-                    {
-                        Country = workSheet.Cells[i, 1].Value.ToString(),
-                        Product = workSheet.Cells[i, 2].Value.ToString(),
-                        DiscountBand = workSheet.Cells[i, 3].Value.ToString(),
-                        UnitsSold = decimal.Parse(workSheet.Cells[i, 4].Value.ToString()),
-                        ManufacturingPrice = decimal.Parse(workSheet.Cells[i, 5].Value.ToString()),
-                        SalePrice = decimal.Parse(workSheet.Cells[i, 6].Value.ToString()),
-                        GrossSales = decimal.Parse(workSheet.Cells[i, 7].Value.ToString()),
-                        Discounts = decimal.Parse(workSheet.Cells[i, 8].Value.ToString()),
-                        Sales = decimal.Parse(workSheet.Cells[i, 9].Value.ToString()),
-                        COGS = decimal.Parse(workSheet.Cells[i, 10].Value.ToString()),
-                        Profit = decimal.Parse(workSheet.Cells[i, 11].Value.ToString()),
-                        Date = DateTime.Parse(workSheet.Cells[i, 12].Value.ToString()),
-                        EnteredBy = workSheet.Cells[i, 13].Value.ToString()
-                    });
-                }
-
-                _context.Samples.AddRange(samplesList);
-                _context.SaveChanges();
-
-                return samplesList;
-            }
         }
 
         // GET: Samples/Create
